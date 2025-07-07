@@ -40,18 +40,42 @@ The platform is built on three core pillars:
 - **Deployment**: Vercel
 - **CDN**: Vercel Edge Network
 
-## Development
+## Branching Strategy (GitFlow)
 
-This repository follows a feature branch workflow:
-- `main` - Production-ready code
-- `dev` - Main development branch
-- `feature/*` - Feature branches
+This project follows the GitFlow branching model:
+
+```
+main (production)
+  └── dev (development/integration)
+        └── feature/feature-name (feature branches)
+        └── feature/another-feature
+```
+
+### Branch Descriptions
+
+- **`main`**: Production-ready code. Only merged from `dev` after thorough testing.
+- **`dev`**: Main development branch where features are integrated and tested.
+- **`feature/*`**: Feature branches created from `dev` for new features or fixes.
+
+### Workflow
+
+1. Create feature branches from `dev`
+2. Develop and test features in isolation
+3. Merge completed features into `dev` via PR
+4. Test integrated features in `dev`
+5. Merge `dev` into `main` for production releases
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guidelines.
 
 ## Getting Started
 
 ```bash
 # Clone the repository
 git clone https://github.com/chadlindell/history-as-code.git
+cd history-as-code
+
+# Checkout the development branch
+git checkout dev
 
 # Install dependencies
 npm install
