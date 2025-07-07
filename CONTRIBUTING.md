@@ -9,7 +9,7 @@ We use GitFlow for managing our development process:
 ```
 main (production)
   └── dev (development/integration)
-        └── feature/feature-name (feature branches)
+        └── feature/feature-name (short-lived feature branches)
 ```
 
 ### Branch Types
@@ -25,10 +25,12 @@ main (production)
    - Used for integration testing
    - Automatically deploys to staging environment
 
-3. **feature/\***: Feature branches
+3. **feature/***: Feature branches (SHORT-LIVED)
    - Created from `dev`
    - Named as `feature/descriptive-name`
    - Merged back into `dev` via PR
+   - **MUST be completed and merged within 1-2 weeks**
+   - Deleted immediately after merge
 
 ## Development Workflow
 
@@ -42,16 +44,54 @@ git pull origin dev
 # Create a new feature branch
 git checkout -b feature/your-feature-name
 
-# Make your changes
-# ...
+# Work on your feature (aim to complete within 1-2 weeks)
+# If it's taking longer, consider breaking it into smaller features
 
-# Commit your changes
+# Make regular, small commits
 git add .
-git commit -m "feat: add your feature description"
+git commit -m "feat: add specific functionality"
+
+# Stay synchronized with dev (do this every few days)
+git fetch origin
+git rebase origin/dev
 
 # Push to GitHub
 git push -u origin feature/your-feature-name
 ```
+
+### Keeping Feature Branches Short-Lived
+
+**Why short-lived branches?**
+- Reduces merge conflicts
+- Easier code reviews
+- Faster integration
+- Better collaboration
+
+**How to keep branches short-lived:**
+
+1. **Break down large features**
+   ```
+   Instead of: feature/entire-journal-module
+   
+   Do this:
+   - feature/journal-data-model
+   - feature/journal-api-endpoints  
+   - feature/journal-ui-components
+   - feature/journal-peer-review
+   ```
+
+2. **Use feature flags**
+   ```typescript
+   // Deploy incomplete features behind flags
+   if (process.env.NEXT_PUBLIC_FEATURE_JOURNAL_REVIEW === 'true') {
+     // New feature code
+   }
+   ```
+
+3. **Merge working increments**
+   - Don't wait for 100% completion
+   - Merge when you have a working piece
+   - Continue in a new branch if needed
 
 ### Creating a Pull Request
 
@@ -63,8 +103,9 @@ git push -u origin feature/your-feature-name
    - Testing performed
    - Screenshots (if UI changes)
 4. Request review from maintainers
-5. Address any feedback
+5. Address any feedback promptly
 6. Once approved, the PR will be merged
+7. **Delete your feature branch immediately**
 
 ### Release Process
 
@@ -137,6 +178,12 @@ npm test
 
 ## Pull Request Guidelines
 
+### PR Size Guidelines
+
+- **Ideal PR**: < 300 lines changed
+- **Maximum PR**: < 500 lines changed
+- **If larger**: Break into multiple PRs
+
 ### PR Title Format
 
 Use the same convention as commit messages:
@@ -175,6 +222,35 @@ Relates to #456
 - [ ] Comments added for complex code
 - [ ] Documentation updated
 - [ ] No console errors or warnings
+- [ ] PR is small and focused (< 500 lines)
+- [ ] Feature branch will be deleted after merge
+```
+
+## Branch Cleanup
+
+### After PR Merge
+
+```bash
+# Local cleanup
+git checkout dev
+git pull origin dev
+git branch -d feature/your-feature-name
+
+# Remote cleanup (usually automatic via GitHub)
+git push origin --delete feature/your-feature-name
+```
+
+### Periodic Cleanup
+
+```bash
+# List all local branches
+git branch
+
+# Delete all merged feature branches
+git branch --merged dev | grep -E 'feature/' | xargs -n 1 git branch -d
+
+# Prune remote tracking branches
+git remote prune origin
 ```
 
 ## Getting Help
@@ -185,7 +261,7 @@ Relates to #456
 
 ## First-Time Contributors
 
-Look for issues labeled `good first issue` or `help wanted`. These are great starting points for new contributors.
+Look for issues labeled `good first issue` or `help wanted`. These are great starting points for new contributors and are typically small, focused tasks that can be completed quickly.
 
 ## License
 
